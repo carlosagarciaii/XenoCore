@@ -1,0 +1,10 @@
+# Generated Files
+**/bin
+**/.vs
+Build
+
+# Configs
+appsettings.json
+
+# Logs
+*.log
