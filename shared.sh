@@ -152,6 +152,7 @@
 # --------------------------------------------------------
 
 	lintDotNet(){
+		createSection "Checking for dotnet-format"
 		dotnet format --version
 		if [ $0 -ne 0 ] ; then
 			createSection "Installing dotnet-format"
