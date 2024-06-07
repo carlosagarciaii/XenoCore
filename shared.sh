@@ -153,6 +153,14 @@
 
 	lintDotNet(){
 		createSection "Checking for dotnet-format"
+		dotnet --version
+		if [ $0 -ne 0 ];
+			then
+				createError "!!ERROR: dotnet is NOT INSTALLED" $0;
+				exit 1;
+				return 1;
+		fi
+		
 		dotnet format --version
 		if [ $0 -ne 0 ]; 
 			then
