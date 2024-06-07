@@ -156,8 +156,10 @@
 		dotnet format --version
 		if [ $0 -ne 0 ]; 
 			then
-				createSection "Installing dotnet-format"
-				dotnet tool install -g dotnet-format
+				createSection "Installing dotnet-format";
+				dotnet tool install -g dotnet-format;
+			else
+				echo "Confirmed dotnet-format is installed";
 		fi
 	
 	
