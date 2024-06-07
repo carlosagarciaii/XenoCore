@@ -159,7 +159,7 @@
 				createSection "Installing dotnet-format";
 				dotnet tool install -g dotnet-format;
 			else
-				echo -e "\e[34m  ## Confirmed dotnet-format is installed";
+				echo -e "\e[34m  ## Confirmed dotnet-format is installed \e[32m";
 		fi
 	
 	
