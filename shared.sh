@@ -170,8 +170,8 @@
 				echo -e "\e[34m  ## Confirmed dotnet-format is installed \e[32m";
 		fi
 	
-		dotnet format ./source/SeleniumXn/SeleniumXn.csproj
-	
+		find ./ -name "*.csproj" -exec dotnet format {} \; ;
+		
 	}
 
 

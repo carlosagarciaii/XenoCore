@@ -41,16 +41,18 @@ namespace SeleniumXn.Tooling
         {
             string[] elementsPossible = ["html", "body", "title", "div"];
             IWebElement element;
-            foreach(string possible in elementsPossible)
+            foreach (string possible in elementsPossible)
             {
                 By locator = By.XPath($"//{possible}");
-                try {
+                try
+                {
                     element = WaitForElement(driver, locator, 1000, 4000);
                     Console.WriteLine($"Found {possible}");
                     return element;
                 }
-                catch (Exception e){
-Console.WriteLine($"Could Not find by {possible}.");
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Could Not find by {possible}.");
                 }
 
             }

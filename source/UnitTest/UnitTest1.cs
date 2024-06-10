@@ -2,6 +2,8 @@ namespace UnitTest
 {
     public class Tests
     {
+
+
         [SetUp]
         public void Setup()
         {
@@ -11,6 +13,8 @@ namespace UnitTest
         public void Test1()
         {
             Assert.Pass();
+            Assert.Pass();
+
         }
     }
 }
