@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using OpenQA.Selenium;
 using System.Threading;
+using Microsoft.VisualBasic;
+using Newtonsoft.Json;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.IE;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 
 
@@ -15,318 +23,847 @@ namespace SeleniumXn.Tooling
         Random rand = new Random();
 
 
-        /// <summary>
-        /// <para>Mimicks human delay in actions by pausing for a random time between 2 given times. </para>
-        /// <para>maxSec = Max Wait time in Seconds</para>
-        /// <para>minSec =  Min Wait time in Seconds</para>
-        /// </summary>
-        public void RSleep(int minSec = 4, int maxSec = 7)
+        private string logMessage = "";
+        private IWebDriver driver { get; set; }
+        private string browserName { get; set; }
+        private string driverFileName { get; set; }
+        private string driverFilePath { get; set; }
+        private string elementSelector { get; set; }
+        private string locatorStrategy { get; set; }
+        private By elementLocator { get; set; }
+        public IWebElement webElement { get; set; }
+        public List<IWebElement> webElements { get; set; }
+
+        LogController logger = new LogController();
+
+        public BrowserControls()
         {
-            if (minSec >= maxSec)
+
+        }
+
+        public IWebDriver GetDriver()
+        {
+            return driver;
+        }
+
+
+        //  ---------------------------------------------------------------
+        //  CREATING A SESSION
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
+
+        #region CreateSession
+
+        /// <summary>
+        /// <para>Returns a String for the filename of the WebDriver</para>
+        /// <para>browserName = The name of the browser
+        /// <br>---Gecko = FF or FireFox</br>
+        /// <br>---Chrome = Google or Chrome</br>
+        /// <br>---IE = IE or IExplore</br>
+        /// <br>---MSEdge = Edge or MSEdge</br></para>
+        /// </summary>
+        /// <returns>String value for the driver's file name</returns>
+        private void SetDriverFileName()
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+
+            switch (browserName.ToLower())
             {
-                throw new Exception("The minSec must be less than the maxSec wait times. ");
+                case "ff":
+                case "firefox":
+                    driverFileName = Constants.FIREFOX_MAC_DRIVER_NAME;
+                    break;
+                case "chrome":
+                case "google":
+                    driverFileName = Constants.CHROME_MAC_DRIVER_NAME;
+                    break;
+                case "ie":
+                case "iexplore":
+                    driverFileName = Constants.IE_MAC_DRIVER_NAME;
+                    break;
+                case "edge":
+                case "msedge":
+                    driverFileName = Constants.MSEDGE_MAC_DRIVER_NAME;
+                    break;
+                default:
+                    string LogMsg = "The Browser Provided does not match an acceptable value.";
+                    logger.Write(LogMsg, funcName);
+                    throw new Exception(LogMsg);
+
+            }
+
+        }
+
+
+        /// <summary>
+        /// Returns a String for the full path to the Driver File
+        /// <para>DriverFileName = The name of the Driver File (IE: Geckodriver.exe)</para>
+        /// </summary>
+        /// <param name="driverFileName"></param>
+        /// <returns></returns>
+        private void SetDriverFilePath()
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            bool isFoundDriverDirPath = false;
+            string fullDriverFilePath;
+
+
+            foreach (string driverDirPathItem in Constants.DEFAULT_MAC_DRIVER_DIRECTORIES)
+            {
+                if (Directory.Exists(driverDirPathItem))
+                {
+                    isFoundDriverDirPath = true;
+                    logger.Write($"Driver Path Found:\t{driverFilePath}", funcName);
+                    fullDriverFilePath = driverDirPathItem + "/" + driverFileName;
+
+                    //					RenameEdgeDriver(driverDirPathItem);
+
+                    if (File.Exists(fullDriverFilePath))
+                    {
+                        logger.Write($"Driver File Found:\t{fullDriverFilePath}", funcName);
+                        driverFilePath = driverDirPathItem + "/";
+                        return;
+                    }
+                }
+            }
+            if (!isFoundDriverDirPath)
+            {
+                logMessage = "EXCEPTION:\n\tDriver Directory Cannot Be Found";
+                logger.Write(logMessage, funcName);
+                throw new Exception(logMessage);
+            }
+
+            logMessage = "EXCEPTION:\n\tDriver File Cannot Be Found";
+            logger.Write(logMessage, funcName);
+            throw new Exception(logMessage);
+        }
+
+
+        /// <summary>
+        /// <para>Creates the IWebDriver session based on the browser selected</para>
+        /// <para>browserName = The name of the browser
+        /// <br>---Gecko = FF or FireFox</br>
+        /// <br>---Chrome = Google or Chrome</br>
+        /// <br>---IE = IE or IExplore</br>
+        /// <br>---MSEdge = Edge or MSEdge</br></para>
+        /// </summary>
+        /// <param name="browserName"></param>
+        /// <returns></returns>
+        private IWebDriver CreateSession()
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            try
+            {
+                switch (browserName.ToLower())
+                {
+                    case "ff":
+                        return new FirefoxDriver(driverFilePath);
+
+                    case "firefox":
+                        return new FirefoxDriver(driverFilePath);
+                    case "chrome":
+                        return new ChromeDriver(driverFilePath);
+                    case "google":
+                        return new ChromeDriver(driverFilePath);
+                    case "ie":
+                        return new InternetExplorerDriver(driverFilePath);
+                    case "iexplore":
+                        return new InternetExplorerDriver(driverFilePath);
+                    case "edge":
+                        return new EdgeDriver(driverFilePath);
+                    case "msedge":
+                        return new EdgeDriver(driverFilePath);
+                    default:
+                        string LogMsg = "Unable to Locate WebDriver";
+                        logger.Write(LogMsg, funcName);
+                        throw new Exception(LogMsg);
+                }
+            }
+            catch (Exception e)
+            {
+                logMessage = $"Error while Attempting to Create Session\n{e}";
+                logger.Write(logMessage, funcName);
+                throw new Exception(logMessage);
+            }
+        }
+
+
+        /// <summary>
+        /// Instantiates the class and Opens the browser session 
+        /// <para><br>inBrowserName = the name of the browser to open</br>
+        /// <br>-Options:</br>
+        /// <br>---FireFox, FF</br>
+        /// <br>---Google, Chrome</br>
+        /// <br>---IE, IExplore</br>
+        /// <br>---Edge, MSEdge</br>
+        /// </para>
+        /// </summary>
+        /// <param name="inBrowserName"></param>
+
+        public BrowserControls(string inBrowserName)
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+
+            logger.Write("Opening Browser", funcName);
+            this.browserName = inBrowserName;
+
+            try
+            {
+                SetDriverFileName();
+
+                SetDriverFilePath();
+
+                driver = CreateSession();
+
+                driver.Manage().Window.Maximize();
+            }
+            catch (Exception e)
+            {
+                logMessage = $"Error while attempting to create the Browser Session\n{e}";
+                logger.Write(logMessage, funcName);
+                throw new Exception(logMessage);
+            }
+        }
+
+
+        #endregion
+
+
+        //  ---------------------------------------------------------------
+        //  Navigating To pages
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
+        #region PageNavigation
+
+        /// <summary>
+        /// Navigates to the specified URL
+        /// <para><br>goToURL = The URL to navigate to.</br>
+        /// <br>retryAttempts = Number of Times to Retry loading the page (Default 0)</br>
+        /// <br>waitInSec = The number of seconds to wait before reloading the page.(Default 20) </br></para>
+        /// </summary>
+        /// <param name="goToURL"></param>
+        /// <param name="retryAttempts"></param>
+        /// <param name="waitInSec"></param>
+        public void NavTo(string goToURL, int retryAttempts = 0, int waitInSec = 20, bool hasHumanWait = true)
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            string ReadyState = "";
+            int pageLoadTimeInSeconds = 0;
+            DateTime startTime = DateTime.Now;
+
+            driver.Url = goToURL;
+            for (int retryCount = retryAttempts + 1; retryCount >= 0; retryCount--)
+            {
+                driver.Navigate();
+
+                for (int i = 0; i < waitInSec; i++)
+                {
+                    try
+                    {
+                        Thread.Sleep(1000);
+                        ReadyState = (string)((IJavaScriptExecutor)driver).ExecuteScript("return document.readyState;");
+                        logger.Write($"Ready State:\t{ReadyState}", funcName);
+                        if (ReadyState.ToLower() == "complete") break;
+                    }
+                    catch (Exception e)
+                    {
+                        string LogMsg = $"\nEXCEPTION HAS OCCURRRED\n\t{e}";
+                        logger.Write(LogMsg, funcName);
+                        throw new Exception(LogMsg);
+                    }
+                    pageLoadTimeInSeconds = i;
+                }
+                if (ReadyState.ToLower() == "complete") break;
+
+            }
+
+            if (ReadyState.ToLower() != "complete") throw new Exception($"\nEXCEPTION:\n\tFailed to Load Page {goToURL}");
+            logger.Write($"Success - Navigated to:\t{driver.Url.ToString()}", funcName, TimeDiffToInt(startTime, DateTime.Now));
+
+            //	if (hasHumanWait) { SimulateHumanWait(6, 10); }
+        }
+
+
+        /// <summary>
+        /// Waits for the Page to be in a readyState
+        /// </summary>
+        /// <returns>True if Page is Ready</returns>
+        public bool WaitForPageReady()
+        {
+            string jScript = "return document.readyState;";
+            string checkValue = "";
+
+            for (int i = 0; i < 1000; i++)
+            {
+                checkValue = ((IJavaScriptExecutor)driver).ExecuteScript($"{jScript}").ToString();
+                if (checkValue == "complete") { return true; }
+
+                Thread.Sleep(500);
+
+            }
+
+
+            return false;
+
+        }
+
+
+        #endregion
+
+
+        //  ---------------------------------------------------------------
+        //  Find Elements (FE)
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
+
+        #region FindElements
+
+        /// <summary>
+        /// Sets the Locator and strategy to use.
+        /// <para><br>-- inElementSelector = The selector for the element (IE: #id, "//a", etc)</br>
+        /// <br>-- inLocatorStrategy = The Strategy to use to locate the element </br>
+        /// <br>-- -- -- xpath (default)</br>
+        /// <br>-- -- -- css / cssselector</br>
+        /// <br>-- -- -- name</br>
+        /// <br>-- -- -- id</br>
+        /// </para>
+        /// </summary>
+        /// <param name="inElementSelector"></param>
+        /// <param name="inLocatorStrategy"></param>
+
+        public void SetLocator(string inElementSelector, string inLocatorStrategy = "xpath")
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            this.elementSelector = inElementSelector;
+            locatorStrategy = inLocatorStrategy;
+            switch (locatorStrategy.ToLower())
+            {
+                case "xpath":
+                    logMessage = $"Locator Strategy:\tXPATH\tElement:\t{inElementSelector}";
+                    elementLocator = By.XPath(inElementSelector);
+                    break;
+                case "css":
+                case "cssselector":
+                    logMessage = $"Locator Strategy:\tCssSelector\tElement:\t{inElementSelector}";
+                    elementLocator = By.CssSelector(inElementSelector);
+                    break;
+                case "id":
+                    logMessage = $"Locator Strategy:\tID\tElement:\t{inElementSelector}";
+                    elementLocator = By.Id(inElementSelector);
+                    break;
+                case "name":
+                    logMessage = $"Locator Strategy:\tName\tElement:\t{inElementSelector}";
+                    elementLocator = By.Name(inElementSelector);
+                    break;
+                case "tagname":
+                    logMessage = $"Locator Strategy:\tTagName\tElement:\t{inElementSelector}";
+                    elementLocator = By.TagName(inElementSelector);
+                    break;
+                case "classname":
+                    logMessage = $"Locator Strategy:\tClassName\tElement:\t{inElementSelector}";
+                    elementLocator = By.ClassName(inElementSelector);
+                    break;
+                default:
+                    logMessage = $"EXCEPTION\tLOCATOR ERROR\nError:\tFE00001\n\tThe Locator Stragety Provided does not match a recognized strategy.\n\tLocator Strategy Provided:\t{inLocatorStrategy}\n\tLocator:\t{inElementSelector}";
+                    logger.Write(logMessage, funcName);
+                    throw new Exception(logMessage);
+
+            }
+            logger.Write(logMessage, funcName);
+        }
+
+        /// <summary>
+        /// Locates a single Element on the page that matches the locator and returns an IWebElement object
+        /// <para><br>-- inElementSelector = The locator for the element (IE: #id, "//a", etc)</br>
+        /// <br>-- inLocatorStrategy = The Strategy to use to locate the element </br>
+        /// <br>-- -- -- xpath (default)</br>
+        /// <br>-- -- -- css / cssselector</br>
+        /// <br>-- -- -- name</br>
+        /// <br>-- -- -- id</br>
+        /// <br>-- isRequired = Whether element is required. (Default: true)</br>
+        /// <br>-- waitForElement = Wait for element to appear on page (true {default}/false)</br>
+        /// <br>-- waitTimeSec = Number of seconds to wait for the element (default = 20)</br>
+        /// </para>
+        /// </summary>
+        /// <param name="inElementSelector"></param>
+        /// <param name="inLocatorStrategy"></param>
+        /// <param name="isRequired"></param>
+        /// <param name="waitForElement"></param>
+        /// <param name="waitTimeSec"></param>
+        /// <returns></returns>
+
+        public void FindElement(string inElementSelector, string inLocatorStrategy = "xpath", bool isRequired = true, bool waitForElement = true, int waitTimeSec = 60)
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            webElement = null;
+            DateTime startTime = DateTime.Now;
+
+            SetLocator(inElementSelector, inLocatorStrategy);
+            logger.Write($"Finding Element [{inElementSelector}]", funcName);
+
+            int waitLoopCounter = (waitTimeSec < 1) ? 1 : waitTimeSec;
+            for (int waitCount = waitLoopCounter; waitCount > 0; waitCount--)
+            {
+                Thread.Sleep(1000);
+                try
+                {
+                    webElement = driver.FindElement(elementLocator);
+                    break;
+                }
+                catch
+                {
+                    logMessage = $"Locator not found:\t{inElementSelector}\t|\t{inLocatorStrategy}";
+
+                    logger.Write(logMessage, funcName);
+
+                }
+            }
+
+            if (webElement == null)
+            {
+                logMessage = $"Unable to Locate Element:\t{this.elementSelector} using strategy {inLocatorStrategy}.";
+                if (isRequired)
+                {
+                    logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                    throw new Exception(logMessage);
+
+                }
+                else
+                {
+                    logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                }
+            }
+
+        }
+
+
+        /// <summary>
+        /// Locates all Elements on the page that match the locator and returns a List of IWebElement objects
+        /// <para><br>-- inElementSelector = The locator for the element (IE: #id, "//a", etc)</br>
+        /// <br>-- inLocatorStrategy = The Strategy to use to locate the element </br>
+        /// <br>-- -- -- xpath (default)</br>
+        /// <br>-- -- -- css / cssselector</br>
+        /// <br>-- -- -- name</br>
+        /// <br>-- -- -- id</br>
+        /// <br>-- isRequired = If element is required (Default true)</br>
+        /// <br>-- waitForElement = Wait for element to appear on page (true {default}/false)</br>
+        /// <br>-- waitTimeSec = Number of seconds to wait for the element (default = 20)</br>
+        /// </para>
+        /// </summary>
+        /// <param name="inElementSelector"></param>
+        /// <param name="inLocatorStrategy"></param>
+        /// <param name="isRequired"></param>
+        /// <param name="waitForElement"></param>
+        /// <param name="waitTimeSec"></param>
+        /// <returns></returns>
+
+        public void FindElements(string inElementSelector, string inLocatorStrategy = "xpath", bool isRequired = true, bool waitForElement = true, int waitTimeSec = 60)
+        {
+
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            webElements = new List<IWebElement>();
+            DateTime startTime = DateTime.Now;
+
+            SetLocator(inElementSelector, inLocatorStrategy);
+
+            int waitLoopCounter = (waitTimeSec < 1) ? 1 : waitTimeSec;
+            for (int waitCount = waitLoopCounter; waitCount > 0; waitCount--)
+            {
+                Thread.Sleep(1000);
+                try
+                {
+                    webElements = new List<IWebElement>(driver.FindElements(elementLocator));
+
+                    break;
+                }
+                catch
+                {
+                    logMessage = $"Locator not found:\t{inElementSelector}\t|\t{inLocatorStrategy}";
+                    logger.Write(logMessage, funcName);
+
+                }
+            }
+
+            if (webElements.Count == 0)
+            {
+                logMessage = $"Unable to Locate Element:\t{inElementSelector} using strategy {inLocatorStrategy}.";
+                if (isRequired)
+                {
+                    logger.Write(logMessage, funcName);
+                    throw new Exception(logMessage);
+                }
+                else
+                {
+                    logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                }
             }
             else
             {
-                Thread.Sleep(rand.Next(minSec * 1000, maxSec * 1000));
-            }
-        }
-        /// <summary>
-        /// <para>Waits for the HTML Page to load.</para>
-        /// <para>Only used in Debugging</para>
-        /// <para>Depreciated</para>
-        /// </summary>
-        /// <returns>IWebElement</returns>
-        public IWebElement WaitForHTMLLoad(IWebDriver driver)
-        {
-            string[] elementsPossible = ["html", "body", "title", "div"];
-            IWebElement element;
-            foreach (string possible in elementsPossible)
-            {
-                By locator = By.XPath($"//{possible}");
-                try
+                string ListOfElements = "\n";
+                foreach (var element in webElements)
                 {
-                    element = WaitForElement(driver, locator, 1000, 4000);
-                    Console.WriteLine($"Found {possible}");
-                    return element;
+                    ListOfElements += $"|{element.ToString()}|\n";
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Could Not find by {possible}.");
-                }
-
+                logMessage = $"Elements Found:\t{webElements.Count.ToString()}\n\t{ListOfElements}";
+                logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
             }
-            throw new Exception("Failed to Detect Page Load");
 
         }
 
-        /// <summary>
-        /// <para>Waits for the element to be loaded then returns the element</para>
-        /// <para>If the element cannot be found, returns an IWebElement with a value of Null</para>
-        /// <para>driver = the IWebDriver to access</para>
-        /// <para>by = the "By" to use as a locator. (IE: by:By.Id("someID"))</para>
-        /// <para>maxAttempts = the maximum number of attempts to find the element (optional | default = 10)</para>
-        /// <para>timeBetweenAttempts = the time in ms between attempts to find the element (optional | default = 2000)</para>
-        /// </summary>
-        /// <returns>IWebDriver</returns>
-        public IWebElement WaitForElement(IWebDriver driver, By by, int maxAttempts = 10, int timeBetweenAttempts = 2000)
-        {
-            IWebElement element;
-            int currentAttempt = 0;
-            do
-            {
-                if (currentAttempt > 0)
-                {
-                    Thread.Sleep(timeBetweenAttempts);
-                }
-                try
-                {
-                    element = driver.FindElement(by);
-                    return element;
-                }
-                catch
-                {
-                    currentAttempt++;
-                    Console.WriteLine("Retry #:\t" + currentAttempt.ToString());
-                    continue;
-                }
+        #endregion
 
 
-            }
-            while (currentAttempt < maxAttempts);
 
+        //  ---------------------------------------------------------------
+        //  Element Interactions (FE)
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
 
-            return null;
-        }
-
+        #region ElementInteractions
 
         /// <summary>
-        /// <para>This returns True if one of the By Options is found. </para>
-        /// <para>driver = the IWebDriver used</para>
-        /// <para>byList = a list of all By Options you want to check for</para>
+        /// Clicks on the Element
+        /// <para>hasHumanWait = whether to simulate human hesitancy after a click (default: true)</para>
         /// </summary>
-        /// <returns>true if 1 of the "by" options is found</returns>
-        public bool ElementFoundOr(IWebDriver driver, By[] byList)
+        /// <param name="hasHumanWait"></param>
+        public void Click(bool hasHumanWait = true)
         {
-            bool elementFound = false;
-            foreach (var item in byList)
-            {
-                try
-                {
-                    driver.FindElement(item);
-                    elementFound = true;
-                    break;
-                }
-                catch
-                {
-                    elementFound = false;
-                }
-
-            }
-            return elementFound;
-        }
-
-        /// <summary>
-        /// <para>This returns True if one of the By Options is found. </para>
-        /// <para>driver = the IWebDriver used</para>
-        /// <para>xpathList = a list of all xpaths you want to check for</para>
-        /// </summary>
-        /// <returns>true if 1 of the "xpaths" is found</returns>
-        public bool ElementFoundOr(IWebDriver driver, params string[] xpathList)
-        {
-            bool elementFound = false;
-            foreach (var item in xpathList)
-            {
-                try
-                {
-                    driver.FindElement(By.XPath(item));
-                    elementFound = true;
-                    break;
-                }
-                catch
-                {
-                    elementFound = false;
-                }
-
-            }
-            return elementFound;
-        }
-
-
-        /// <summary>
-        /// <para>This returns True if one of the By Options is found. </para>
-        /// <para>driver = the IWebDriver used</para>
-        /// <para>xpathList = a list of all xpaths you want to check for</para>
-        /// </summary>
-        /// <returns>true if 1 of the "xpaths" is found</returns>
-        public bool ElementFoundOr(IWebDriver driver, List<string> xpathList)
-        {
-            bool elementFound = false;
-            foreach (var item in xpathList)
-            {
-                try
-                {
-                    driver.FindElement(By.XPath(item));
-                    elementFound = true;
-                    break;
-                }
-                catch
-                {
-                    elementFound = false;
-                }
-
-            }
-            return elementFound;
-        }
-
-
-
-
-        /// <summary>
-        /// <para>Searches for a single element using the "By"</para>
-        /// <para>IE: By.Xpath("//div[@class='banner']") will search for 1 div tag with a class of banner </para>
-        /// <para>driver = the IWebDriver to access</para>
-        /// <para>by = the "By" to use as a locator. (IE: by:By.Id("someID"))</para>
-        /// </summary>
-        /// <returns>bool</returns>
-        public bool ElementFound(IWebDriver driver, By by)
-        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            DateTime startTime = DateTime.Now;
 
             try
             {
-                driver.FindElement(by);
-
-                return true;
-
+                logger.Write("Clicking on Element.", funcName, TimeDiffToInt(startTime, DateTime.Now));
+                webElement.Click();
             }
-            catch
+            catch (Exception e)
             {
-                return false;
-            }
+                logMessage = $"ERROR:\tCannot Click with Selenium.\n{e}";
+                logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                throw new Exception(logMessage);
 
+            }
+            //			if (hasHumanWait) { SimulateHumanWait(); }
 
         }
 
 
-
-
         /// <summary>
-        /// <para>Searches for a single element using the "By"</para>
-        /// <para>driver = the IWebDriver to access</para>
-        /// <para>xpath = the xpath of the element to use as a locator. </para>
+        /// Gets Element Attributes (IE: InnerText, InnerHTML)
+        /// <para><br>--- attribute2Get = the attribute to get.</br>
+        /// <br>--- --- innerHTML</br>
+        /// <br>--- --- innerText</br>
+        /// <br>--- --- Others as allowed by Selenium WebDriver</br></para>
         /// </summary>
-        /// <returns>bool</returns>
-        public bool ElementFound(IWebDriver driver, string xpath)
+        /// <param name="attribute2Get"></param>
+        /// <returns></returns>
+        public string GetAttribute(string attribute2Get = "innerText")
         {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            string outValue = "";
+            string outMsg = "";
+            DateTime startTime = DateTime.Now;
+
             try
             {
-                driver.FindElement(By.XPath(xpath));
-
-                return true;
-
-            }
-            catch
-            {
-                return false;
-            }
-
-
-
-        }
-        /// <summary>
-        /// <para>Checks to see if a list of elements can be found by Xpath</para>
-        /// <para>driver = the IWebDriver to access</para>
-        /// <para>xpath = receives XPaths to all elments that must be present.</para>
-        /// </summary>
-        /// <returns>bool</returns>
-        public bool ElementsFound(IWebDriver driver, params string[] xpath)
-        {
-            By locator;
-
-            foreach (var xp in xpath)
-            {
-                locator = By.XPath(xp);
-                if (!ElementFound(driver, locator))
+                switch (attribute2Get.ToLower())
                 {
-                    return false;
+                    case "innertext":
+                    case "text":
+                        outValue = webElement.GetAttribute("innerText");
+                        break;
+                    case "innerhtml":
+                    case "html":
+                        outValue = webElement.GetAttribute("innerHTML");
+                        break;
+
+                    default:
+                        outValue = webElement.GetAttribute(attribute2Get);
+                        break;
                 }
-
             }
-            return true;
-
-        }
-        /// <summary>
-        /// <para>Checks to see if a list of elements can be found by Xpath</para>
-        /// <para>driver = the IWebDriver to access</para>
-        /// <para>xpath = receives a string list of XPaths to all elments that must be present.</para>
-        /// </summary>
-        /// <returns>bool</returns>
-        public bool ElementsFound(IWebDriver driver, List<string> xpath)
-        {
-            By locator;
-
-            foreach (var xp in xpath)
+            catch (Exception e)
             {
-                locator = By.XPath(xp);
-                if (!ElementFound(driver, locator))
-                {
-                    return false;
-                }
-
+                logMessage = $"ERROR:\tThe attribute provided [{attribute2Get}] does not match a valid type for element [{webElement}]. \n{e}";
+                logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                throw new Exception(logMessage);
             }
-            return true;
+            outMsg = $"Attribute Returned: {outValue}";
+            logger.Write(outMsg, funcName, TimeDiffToInt(startTime, DateTime.Now));
+            return outValue;
 
         }
 
 
         /// <summary>
-        /// <para>This searches for all instances of an element where the ID starts with a string.</para>
-        /// <para>driver = the IWebDriver being used</para>
-        /// <para>elementIDPrefix = the prefix for the element ID. (IE: rqOption will populate rqOption0, rqOption1, etc)</para>
-        /// <para>max2Find = the maximum items to look for. (Default 20)</para>
-        /// <para>For Instance: elementID: "option" will return a list with "option0","option1", etc</para>
+        /// GetProperty retrieves the property from an element.
+        /// <para>- property2Get = the Property to get. (Default: Value)</para>
         /// </summary>
-        /// <returns>List{string}</returns>
-        public List<string> GetOptionsByID(IWebDriver driver, string elementIDPrefix, int max2Find = 20)
+        /// <param name="property2Get"></param>
+        /// <returns></returns>
+        public string GetProperty(string property2Get = "value")
         {
-            List<string> optionsFound = new List<string>();
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            string outValue = "";
+            string outMsg = "";
+            DateTime startTime = DateTime.Now;
 
-            for (int i = 0; i <= max2Find; i++)
+            try
             {
-                if (ElementFound(driver, By.Id(elementIDPrefix + i.ToString())))
-                {
-                    optionsFound.Add(elementIDPrefix + i.ToString());
-                }
+                outValue = webElement.GetDomProperty(property2Get);
             }
-            return optionsFound;
+            catch (Exception e)
+            {
+                logMessage = $"ERROR:\tThe attribute provided [{property2Get}] does not match a valid type for element [{webElement}] . \n{e}";
+                logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                throw new Exception(logMessage);
+            }
+            outMsg = $"Property Found: {outValue}";
+            logger.Write(outMsg, funcName, TimeDiffToInt(startTime, DateTime.Now));
+            return outValue;
+
         }
 
 
         /// <summary>
-        /// <para>This will close multiple tabs preserving only the base tab (WindowHandles[0])</para>
-        /// <para>driver = the IWebDriver you will be using</para>
-        /// <para>num2Close = the number of tabs to close (Default: 1)</para>
-        /// <para>NOTE: This will return false if unable to close the requested number of tabs, but will not throw an exception</para>
+        /// Sends keys to the element
+        /// <para>sendValue = the text to send
+        /// <br>doTrim = Trim all beginning and ending white space as well as removing double spaces</br></para>
         /// </summary>
-        /// <returns>bool - true if all closed successfully, else false</returns>
-        public bool CloseTab(IWebDriver driver, int num2Close = 1)
+        /// <param name="sendValue"></param>
+        /// <param name="doTrim"></param>
+        public void SendKeys(string sendValue, bool doTrim = true)
         {
-            for (int i = 0; i < num2Close; i++)
+            string funcName = MethodBase.GetCurrentMethod().Name;
+
+            if (doTrim)
             {
-                try
-                {
-                    driver.SwitchTo().Window(driver.WindowHandles[1]);
-                    driver.Close();
-                    driver.SwitchTo().Window(driver.WindowHandles[0]);
-                }
-                catch
-                {
-                    return false;
-                }
+                // Remove Double Spacing
+                sendValue = Regex.Replace(sendValue, "\\s+", " ");
+                // Left Trim/Right Trim
+                sendValue = sendValue.Trim();
             }
-            return true;
+
+            try
+            {
+                webElement.SendKeys(sendValue);
+            }
+            catch (Exception e)
+            {
+                logMessage = $"Unable to Send text [{sendValue}] to Element [{webElement}]\n{e}";
+                logger.Write(logMessage, funcName);
+                throw new Exception(logMessage);
+            }
 
         }
+
+        /// <summary>
+        /// Set the Attribute for an Element
+        /// </summary>
+        /// <param name="attribute2Set"></param>
+        /// <param name="value2Set"></param>
+        public void SetAttribute(string attribute2Set, string value2Set)
+        {
+
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            string jScript = "";
+
+            try
+            {
+
+                logger.Write($"JavaScript to Run:\n{jScript}", funcName);
+
+                var testItem = ((IJavaScriptExecutor)driver).ExecuteScript(jScript);
+            }
+            catch (Exception e)
+            {
+                logMessage = $"Failed to Run JavaScript:\n{jScript}\n{e}";
+                logger.Write(logMessage, funcName);
+                throw new Exception(logMessage);
+
+            }
+
+        }
+
+
+
+        /// <summary>
+        /// Generates the JavaScript locator script 
+        /// </summary>
+        /// <returns></returns>
+        public string LocateByJS()
+        {
+            //			throw new Exception("Not Yet Implemented");
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            string outMsg = "";
+            DateTime startTime = DateTime.Now;
+            string jsOutString = "";
+            switch (locatorStrategy.ToLower())
+            {
+                case ("xpath"):
+                    jsOutString = $"document.evaluate(\"{elementSelector}\", document,null, XPathResult.ANY_TYPE,null).FIRST_ORDERED_NODE_TYPE";
+                    break;
+                case ("css"):
+                case ("cssselector"):
+                    jsOutString = $"document.querySelector(\"{elementSelector}\");";
+                    break;
+                case ("id"):
+                    jsOutString = $"document.getElementById(\"{elementSelector}\");";
+                    break;
+                case ("name"):
+                    jsOutString = $"document.getElementsByName(\"{elementSelector}\");";
+                    break;
+                case ("classname"):
+                    jsOutString = $"document.getElementsByClassName(\"{elementSelector}\");";
+                    break;
+                case ("tagname"):
+                    jsOutString = $"document.getElementsByTagName(\"{elementSelector}\");";
+                    break;
+
+                default:
+                    logMessage = "Locator Strategy does not match viable options. ";
+                    logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                    throw new Exception(logMessage);
+
+            }
+
+            if (jsOutString == "")
+            {
+                logMessage = $"Location Strategy [{locatorStrategy}] not supported.";
+                logger.Write(logMessage, funcName, TimeDiffToInt(startTime, DateTime.Now));
+                throw new Exception(logMessage);
+            }
+
+            outMsg = $"Found: {elementSelector}";
+            logger.Write(outMsg, funcName, TimeDiffToInt(startTime, DateTime.Now));
+            return jsOutString;
+        }
+
+
+        #endregion
+
+
+
+        //  ---------------------------------------------------------------
+        //  JavaScript Functions
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
+
+        #region JavaScript
+
+        public void RunJS(string javascriptCode)
+        {
+
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            try
+            {
+                ((IJavaScriptExecutor)driver).ExecuteScript($"{javascriptCode}");
+            }
+            catch (Exception e)
+            {
+                logger.Write(e.Message, funcName);
+
+            }
+        }
+
+        public string RunJsStringOut(string javascriptCode)
+        {
+
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            try
+            {
+                return (string)((IJavaScriptExecutor)driver).ExecuteScript($"{javascriptCode}");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Thread.Sleep(5000);
+                throw new Exception(e.Message);
+
+            }
+        }
+
+        /// <summary>
+        /// Uses JavaScript to find and click on an element <br />
+        /// Should click elements that normal Selenium Click does not <br />
+        /// Does not always return errors when click fails (JS limitation)
+        /// </summary>
+        /// <param name="xpath">Xpath to the element</param>
+        public void ClickJS(string xpath)
+        {
+            string funcName = MethodBase.GetCurrentMethod().Name;
+            string jScript = "";
+
+            jScript += "function clickJS(xpath) \n";
+            jScript += "{  \n";
+            jScript += "	try \n";
+            jScript += "	{ \n";
+            jScript += "		let element = document.evaluate(xpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE).singleNodeValue; \n";
+            jScript += "		element.click(); \n";
+            jScript += "	} \n";
+            jScript += "	catch (e) \n";
+            jScript += "	{ \n";
+            jScript += "		return e; \n";
+            jScript += "	} \n";
+            jScript += "	return 'SUCCESS'; \n";
+            jScript += "} \n";
+            jScript += $"return clickJS(`{xpath}`);";
+
+            string returnValue = "";
+            try
+            {
+
+                returnValue = ((IJavaScriptExecutor)driver).ExecuteScript($"{jScript}").ToString();
+                if (returnValue == "SUCCESS")
+                {
+                    logger.Write($"{returnValue} Click on [{xpath}]", funcName);
+                }
+                else
+                {
+                    logger.Write($"Failed to click on [{xpath}]\n\t{returnValue}", funcName);
+                }
+
+            }
+            catch (Exception e)
+            {
+                logger.Write(e.Message, funcName);
+            }
+
+
+        }
+
+
+        #endregion
+
+
+
+
+
+
+
+        //  ---------------------------------------------------------------
+        //  General Functions
+        //  ---------------------------------------------------------------
+        //  ---------------------------------------------------------------
+        #region General Functions
+
+        /// <summary>
+        /// Returns the time differences in seconds
+        /// </summary>
+        /// <param name="startTime">The Start Time</param>
+        /// <param name="endTime">The End Time</param>
+        /// <returns></returns>
+        public int TimeDiffToInt(DateTime startTime, DateTime endTime)
+        {
+            int result;
+
+            result = endTime.Subtract(startTime).Seconds + endTime.Subtract(startTime).Minutes * 60 + endTime.Subtract(startTime).Hours * 3600 + endTime.Subtract(startTime).Hours * 3600 * 24;
+
+            return result;
+        }
+
+
+        #endregion
 
 
     }
