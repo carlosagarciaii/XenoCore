@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("XenoCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2bcda2cd355a30713f8ce82b7aef54464c479b11")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af4c6fb56bddc25f272a3fcf8f5f1164a19525df")]
 [assembly: System.Reflection.AssemblyProductAttribute("XenoCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("XenoCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

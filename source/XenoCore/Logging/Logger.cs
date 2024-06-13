@@ -27,11 +27,11 @@ namespace XenoCore.Logging
             }
         }
 
-/// <summary>
-/// Creates the t_log table for the desired SQL Server
-/// </summary>
-/// <param name="sqlType">SQL Server Type (IE: MySQL, MSSQL, PostGres, etc)</param>
-/// <exception cref="Exception"></exception>
+        /// <summary>
+        /// Creates the t_log table for the desired SQL Server
+        /// </summary>
+        /// <param name="sqlType">SQL Server Type (IE: MySQL, MSSQL, PostGres, etc)</param>
+        /// <exception cref="Exception"></exception>
         public void SetupLogTable(string sqlType)
         {
             string funcName = MethodBase.GetCurrentMethod().Name;
@@ -132,8 +132,9 @@ CREATE TABLE t_log (
 
             }
 
-            try {
-            
+            try
+            {
+
             }
             catch (Exception e)
             {
