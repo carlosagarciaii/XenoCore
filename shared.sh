@@ -97,7 +97,7 @@
         done
 
         echo ""
-        echo -e "\e[34m"
+        echo -e "\e[96m"
         echo -e "  $message  \e[55m"
         echo "  $div"
         echo -e "\e[32m"
