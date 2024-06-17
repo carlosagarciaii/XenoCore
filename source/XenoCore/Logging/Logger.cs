@@ -163,28 +163,28 @@ CREATE TABLE t_log (
             try
 
             {
-            if (LogFilePath != null && LogFilePath.Trim() !=  "")
-            {
+                if (LogFilePath != null && LogFilePath.Trim() != "")
+                {
                     Log.Information(writeMsg);
-            }
+                }
 
-            if (sqlConnection != null)
-            {
+                if (sqlConnection != null)
+                {
 
-            var query = "usp_trace_log";
-            var param = new DynamicParameters();
-
-
+                    var query = "usp_trace_log";
+                    var param = new DynamicParameters();
 
 
 
-            // PARAMETERS
 
-            param.Add("@in_func_name", funcName);
-            param.Add("@in_duration", duration);
-            param.Add("@in_message", message);
-            sqlConnection.Query(query, param, commandType: System.Data.CommandType.StoredProcedure);
-            }
+
+                    // PARAMETERS
+
+                    param.Add("@in_func_name", funcName);
+                    param.Add("@in_duration", duration);
+                    param.Add("@in_message", message);
+                    sqlConnection.Query(query, param, commandType: System.Data.CommandType.StoredProcedure);
+                }
             }
             catch (Exception e)
             {

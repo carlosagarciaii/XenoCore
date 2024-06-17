@@ -85,7 +85,7 @@ namespace SeleniumXn.Tooling
                     chOptions.AddArgument("--disable-gpu"); // Disable GPU acceleration
                     chOptions.AddArgument("--no-sandbox"); // Required for some environments
                     chOptions.AddArgument("--disable-dev-shm-usage"); // Overcome limited resource problems
-                    
+
                     driver = new ChromeDriver(chOptions);
                     //                    OpenQA.Selenium.Chromium.ChromiumDriverService;
                     //                    driverFileName = Constants.CHROME_MAC_DRIVER_NAME;
@@ -241,7 +241,7 @@ namespace SeleniumXn.Tooling
 
 
                 // TODO: Remove Set Driver Path
-//                SetDriverFilePath();
+                //                SetDriverFilePath();
 
                 driver = CreateSession();
 
