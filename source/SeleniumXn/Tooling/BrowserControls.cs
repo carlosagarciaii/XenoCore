@@ -36,7 +36,7 @@ namespace SeleniumXn.Tooling
 
         Log logger = new Log();
 
- 
+
 
 
         public IWebDriver GetDriver()
@@ -70,24 +70,24 @@ namespace SeleniumXn.Tooling
                 case "ff":
                 case "firefox":
                     driver = new FirefoxDriver();
-//                    driverFileName = Constants.FIREFOX_MAC_DRIVER_NAME;
+                    //                    driverFileName = Constants.FIREFOX_MAC_DRIVER_NAME;
                     break;
                 case "chrome":
                 case "google":
                     driver = new ChromeDriver();
-//                    OpenQA.Selenium.Chromium.ChromiumDriverService;
-//                    driverFileName = Constants.CHROME_MAC_DRIVER_NAME;
+                    //                    OpenQA.Selenium.Chromium.ChromiumDriverService;
+                    //                    driverFileName = Constants.CHROME_MAC_DRIVER_NAME;
                     break;
-/*                case "ie":
-                case "iexplore":
- //                   driver = new IEDriver();
-  //                  driverFileName = Constants.IE_MAC_DRIVER_NAME;
-                    break;
-*/
+                /*                case "ie":
+                                case "iexplore":
+                 //                   driver = new IEDriver();
+                  //                  driverFileName = Constants.IE_MAC_DRIVER_NAME;
+                                    break;
+                */
                 case "edge":
                 case "msedge":
                     driver = new EdgeDriver();
-//                    driverFileName = Constants.MSEDGE_MAC_DRIVER_NAME;
+                    //                    driverFileName = Constants.MSEDGE_MAC_DRIVER_NAME;
                     break;
                 default:
                     string LogMsg = "The Browser Provided does not match an acceptable value.";
