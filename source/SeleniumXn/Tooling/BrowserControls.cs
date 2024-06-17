@@ -11,14 +11,14 @@ using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.IE;
 using System.Reflection;
 using System.Text.RegularExpressions;
-
+using XenoCore.Logging;
 
 
 namespace SeleniumXn.Tooling
 {
 
 
-    public class Tools
+    public class BrowserControls
     {
         Random rand = new Random();
 
@@ -34,12 +34,10 @@ namespace SeleniumXn.Tooling
         public IWebElement webElement { get; set; }
         public List<IWebElement> webElements { get; set; }
 
-        LogController logger = new LogController();
+        Log logger = new Log();
 
-        public BrowserControls()
-        {
+ 
 
-        }
 
         public IWebDriver GetDriver()
         {
@@ -71,19 +69,25 @@ namespace SeleniumXn.Tooling
             {
                 case "ff":
                 case "firefox":
-                    driverFileName = Constants.FIREFOX_MAC_DRIVER_NAME;
+                    driver = new FirefoxDriver();
+//                    driverFileName = Constants.FIREFOX_MAC_DRIVER_NAME;
                     break;
                 case "chrome":
                 case "google":
-                    driverFileName = Constants.CHROME_MAC_DRIVER_NAME;
+                    driver = new ChromeDriver();
+//                    OpenQA.Selenium.Chromium.ChromiumDriverService;
+//                    driverFileName = Constants.CHROME_MAC_DRIVER_NAME;
                     break;
-                case "ie":
+/*                case "ie":
                 case "iexplore":
-                    driverFileName = Constants.IE_MAC_DRIVER_NAME;
+ //                   driver = new IEDriver();
+  //                  driverFileName = Constants.IE_MAC_DRIVER_NAME;
                     break;
+*/
                 case "edge":
                 case "msedge":
-                    driverFileName = Constants.MSEDGE_MAC_DRIVER_NAME;
+                    driver = new EdgeDriver();
+//                    driverFileName = Constants.MSEDGE_MAC_DRIVER_NAME;
                     break;
                 default:
                     string LogMsg = "The Browser Provided does not match an acceptable value.";
@@ -107,7 +111,7 @@ namespace SeleniumXn.Tooling
             bool isFoundDriverDirPath = false;
             string fullDriverFilePath;
 
-
+            // TODO: Remove SetDriverFilePath
             foreach (string driverDirPathItem in Constants.DEFAULT_MAC_DRIVER_DIRECTORIES)
             {
                 if (Directory.Exists(driverDirPathItem))

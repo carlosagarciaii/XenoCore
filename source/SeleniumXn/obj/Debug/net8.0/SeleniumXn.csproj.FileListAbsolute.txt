@@ -1,0 +1,6 @@
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.csproj.AssemblyReference.cache
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.AssemblyInfoInputs.cache
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.AssemblyInfo.cs
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.csproj.CoreCompileInputs.cache
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.sourcelink.json

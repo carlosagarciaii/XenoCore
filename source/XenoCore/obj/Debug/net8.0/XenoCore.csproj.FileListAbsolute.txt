@@ -1,0 +1,13 @@
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\bin\Debug\net8.0\XenoCore.deps.json
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\bin\Debug\net8.0\XenoCore.dll
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\bin\Debug\net8.0\XenoCore.pdb
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.csproj.AssemblyReference.cache
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.AssemblyInfoInputs.cache
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.AssemblyInfo.cs
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.csproj.CoreCompileInputs.cache
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.sourcelink.json
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.dll
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\refint\XenoCore.dll
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\XenoCore.pdb
+C:\Users\xenor\source\repos\XenoCore\source\XenoCore\obj\Debug\net8.0\ref\XenoCore.dll

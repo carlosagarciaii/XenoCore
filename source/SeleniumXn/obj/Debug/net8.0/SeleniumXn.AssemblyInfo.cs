@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SeleniumXn")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af4c6fb56bddc25f272a3fcf8f5f1164a19525df")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+400144de63e68fff1d7c4b2fb3248a7f5ee877f3")]
 [assembly: System.Reflection.AssemblyProductAttribute("SeleniumXn")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SeleniumXn")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

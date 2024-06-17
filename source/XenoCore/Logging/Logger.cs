@@ -9,13 +9,13 @@ using System.Reflection;
 
 namespace XenoCore.Logging
 {
-    public class LogController
+    public class Log
     {
         private IDbConnection sqlConnection;
         private string LogFilePath;
 
 
-        public LogController(string logFilePath = "", string sqlConnectionString = "")
+        public Log(string logFilePath = "", string sqlConnectionString = "")
         {
             if (logFilePath.Trim() != "")
             {
@@ -134,7 +134,7 @@ CREATE TABLE t_log (
 
             try
             {
-
+                sqlConnection.Query(query);
             }
             catch (Exception e)
             {

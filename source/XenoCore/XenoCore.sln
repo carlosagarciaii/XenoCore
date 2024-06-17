@@ -5,9 +5,16 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "XenoCore", "XenoCore.csproj", "{CBC142BB-7A72-464E-B4B9-876FA1C3334D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SeleniumXn", "..\SeleniumXn\SeleniumXn.csproj", "{5F457EA6-0970-4A98-8F63-7C99F80A5565}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SeleniumXn", "..\SeleniumXn\SeleniumXn.csproj", "{5F457EA6-0970-4A98-8F63-7C99F80A5565}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CBC142BB-7A72-464E-B4B9-876FA1C3334D} = {CBC142BB-7A72-464E-B4B9-876FA1C3334D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "..\UnitTest\UnitTest.csproj", "{D6DC302D-A8A3-4504-A211-4612FB811D87}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5F457EA6-0970-4A98-8F63-7C99F80A5565} = {5F457EA6-0970-4A98-8F63-7C99F80A5565}
+		{CBC142BB-7A72-464E-B4B9-876FA1C3334D} = {CBC142BB-7A72-464E-B4B9-876FA1C3334D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
