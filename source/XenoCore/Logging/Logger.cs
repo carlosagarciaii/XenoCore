@@ -9,17 +9,22 @@ using System.Reflection;
 
 namespace XenoCore.Logging
 {
-    public class Log
+    public class Logger
     {
         private IDbConnection sqlConnection;
         private string LogFilePath;
 
 
-        public Log(string logFilePath = "", string sqlConnectionString = "")
+        public Logger(string logFilePath = "", string sqlConnectionString = "")
         {
             if (logFilePath.Trim() != "")
             {
                 LogFilePath = logFilePath;
+
+                Log.Logger = new LoggerConfiguration()
+                        .WriteTo.File(LogFilePath,
+                            rollingInterval: RollingInterval.Day)
+                        .CreateLogger();
             }
             if (sqlConnectionString.Trim() != "")
             {
@@ -155,6 +160,17 @@ CREATE TABLE t_log (
             Console.WriteLine(writeMsg);
 
 
+            try
+
+            {
+            if (LogFilePath != null && LogFilePath.Trim() !=  "")
+            {
+                    Log.Information(writeMsg);
+            }
+
+            if (sqlConnection != null)
+            {
+
             var query = "usp_trace_log";
             var param = new DynamicParameters();
 
@@ -167,10 +183,8 @@ CREATE TABLE t_log (
             param.Add("@in_func_name", funcName);
             param.Add("@in_duration", duration);
             param.Add("@in_message", message);
-
-            try
-            {
-                sqlConnection.Query(query, param, commandType: System.Data.CommandType.StoredProcedure);
+            sqlConnection.Query(query, param, commandType: System.Data.CommandType.StoredProcedure);
+            }
             }
             catch (Exception e)
             {

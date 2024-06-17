@@ -2,6 +2,7 @@
 **/bin
 **/.vs
 Build
+**/obj
 
 # Configs
 appsettings.json

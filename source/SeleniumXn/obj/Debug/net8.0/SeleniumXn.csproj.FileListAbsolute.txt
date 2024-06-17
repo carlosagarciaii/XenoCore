@@ -4,3 +4,16 @@ C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\Selenium
 C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.AssemblyInfo.cs
 C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.csproj.CoreCompileInputs.cache
 C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.sourcelink.json
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\selenium-manager\linux\selenium-manager
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\selenium-manager\macos\selenium-manager
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\selenium-manager\windows\selenium-manager.exe
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\SeleniumXn.deps.json
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\SeleniumXn.dll
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\SeleniumXn.pdb
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\XenoCore.dll
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\bin\Debug\net8.0\XenoCore.pdb
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.csproj.Up2Date
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.dll
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\refint\SeleniumXn.dll
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\SeleniumXn.pdb
+C:\Users\xenor\source\repos\XenoCore\source\SeleniumXn\obj\Debug\net8.0\ref\SeleniumXn.dll

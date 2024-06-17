@@ -34,7 +34,7 @@ namespace SeleniumXn.Tooling
         public IWebElement webElement { get; set; }
         public List<IWebElement> webElements { get; set; }
 
-        Log logger = new Log();
+        Logger logger = new Logger();
 
 
 
@@ -61,7 +61,7 @@ namespace SeleniumXn.Tooling
         /// <br>---MSEdge = Edge or MSEdge</br></para>
         /// </summary>
         /// <returns>String value for the driver's file name</returns>
-        private void SetDriverFileName()
+        private void SetBrowserDriver()
         {
             string funcName = MethodBase.GetCurrentMethod().Name;
 
@@ -69,12 +69,24 @@ namespace SeleniumXn.Tooling
             {
                 case "ff":
                 case "firefox":
+                    var ffOptions = new FirefoxOptions();
+
+                    ffOptions.AddArgument("--headless"); // Run in headless mode
+                    ffOptions.AddArgument("--disable-gpu"); // Disable GPU acceleration
+                    ffOptions.AddArgument("--no-sandbox"); // Required for some environments
+                    ffOptions.AddArgument("--disable-dev-shm-usage"); // Overcome limited resource problems
                     driver = new FirefoxDriver();
                     //                    driverFileName = Constants.FIREFOX_MAC_DRIVER_NAME;
                     break;
                 case "chrome":
                 case "google":
-                    driver = new ChromeDriver();
+                    var chOptions = new ChromeOptions();
+                    chOptions.AddArgument("--headless"); // Run in headless mode
+                    chOptions.AddArgument("--disable-gpu"); // Disable GPU acceleration
+                    chOptions.AddArgument("--no-sandbox"); // Required for some environments
+                    chOptions.AddArgument("--disable-dev-shm-usage"); // Overcome limited resource problems
+                    
+                    driver = new ChromeDriver(chOptions);
                     //                    OpenQA.Selenium.Chromium.ChromiumDriverService;
                     //                    driverFileName = Constants.CHROME_MAC_DRIVER_NAME;
                     break;
@@ -86,6 +98,15 @@ namespace SeleniumXn.Tooling
                 */
                 case "edge":
                 case "msedge":
+                    var edOptions = new EdgeOptions();
+                    edOptions.AddArgument("--headless"); // Run in headless mode
+                    edOptions.AddArgument("--disable-gpu"); // Disable GPU acceleration
+                    edOptions.AddArgument("--no-sandbox"); // Required for some environments
+                    edOptions.AddArgument("--disable-dev-shm-usage"); // Overcome limited resource problems
+
+
+
+
                     driver = new EdgeDriver();
                     //                    driverFileName = Constants.MSEDGE_MAC_DRIVER_NAME;
                     break;
@@ -98,6 +119,7 @@ namespace SeleniumXn.Tooling
 
         }
 
+        /*
 
         /// <summary>
         /// Returns a String for the full path to the Driver File
@@ -105,6 +127,8 @@ namespace SeleniumXn.Tooling
         /// </summary>
         /// <param name="driverFileName"></param>
         /// <returns></returns>
+
+        
         private void SetDriverFilePath()
         {
             string funcName = MethodBase.GetCurrentMethod().Name;
@@ -141,7 +165,7 @@ namespace SeleniumXn.Tooling
             logger.Write(logMessage, funcName);
             throw new Exception(logMessage);
         }
-
+        */
 
         /// <summary>
         /// <para>Creates the IWebDriver session based on the browser selected</para>
@@ -213,9 +237,11 @@ namespace SeleniumXn.Tooling
 
             try
             {
-                SetDriverFileName();
+                SetBrowserDriver();
 
-                SetDriverFilePath();
+
+                // TODO: Remove Set Driver Path
+//                SetDriverFilePath();
 
                 driver = CreateSession();
 
