@@ -4,7 +4,7 @@ using SeleniumXn.Tooling;
 using System.Threading;
 
 
-BrowserControls bc = new BrowserControls("google");
+HTMLControls bc = new BrowserControls("google");
 
 bc.NavTo("https://www.gamestop.com/search/?store=0681");
 
