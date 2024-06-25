@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("XenoCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+24acbcc78b6bc80751ca31d14ff959cce13fa134")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb1e5e0bf79b71be2ad633de0515cda81640ad66")]
 [assembly: System.Reflection.AssemblyProductAttribute("XenoCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("XenoCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

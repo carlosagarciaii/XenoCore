@@ -17,7 +17,7 @@ using XenoCore.Logging;
 
 namespace SeleniumXn.Tooling
 {
-    public  class SessionManager
+    public class SessionManager
     {
 
         Random rand = new Random();
